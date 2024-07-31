@@ -53,4 +53,4 @@ jobs:
         mvn deploy:deploy-file -DgroupId=${{ github.event.inputs.group }} -DartifactId=${{ github.event.inputs.artifact }} -Dversion=${{ github.event.inputs.version }} -Dpackaging=jar -Dfile=./m2/org/yaml/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/barath-tw/test-dependency-management
       env:
         MAVEN_USERNAME: ${{ github.actor }}
-        MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        MAVEN_PASSWORD: ${{ secrets.GH_TOKEN }}
