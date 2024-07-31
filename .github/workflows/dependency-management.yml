@@ -49,6 +49,11 @@ jobs:
       with:
         project: 'test'
         path: ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}
+        format: 'HTML'
+        out: 'reports'
+        args: >
+            --failOnCVSS 7
+            --enableRetired
       env:
         JAVA_HOME: /opt/jdk
 
