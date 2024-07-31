@@ -30,6 +30,9 @@ jobs:
     - name: Download Dependency
       run: |
         mvn dependency:get -Dartifact=${{ github.event.inputs.group }}:${{ github.event.inputs.artifact }}:${{ github.event.inputs.version }}
+        # Manually transform groupId to file path
+        GROUP_PATH=$(echo ${{ github.event.inputs.group }} | tr '.' '/')
+        echo "GROUP_PATH=$GROUP_PATH" >> $GITHUB_ENV
       env:
         MAVEN_OPTS: "-Dmaven.repo.local=./m2"
 
@@ -38,7 +41,7 @@ jobs:
 
     - name: Sign Dependency
       run: |
-        gpg --batch --yes --armor --output signed-${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.asc --detach-sig ./m2/${{ github.event.inputs.group.replace('.', '/') }}/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
+        gpg --batch --yes --armor --output signed-${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.asc --detach-sig ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
       env:
         GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
@@ -56,7 +59,7 @@ jobs:
 
     - name: Publish to GitHub Packages
       run: |
-        mvn deploy:deploy-file -DgroupId=${{ github.event.inputs.group }} -DartifactId=${{ github.event.inputs.artifact }} -Dversion=${{ github.event.inputs.version }} -Dpackaging=jar -Dfile=./m2/${{ github.event.inputs.group.replace('.', '/') }}/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/barath-tw/test-dependency-management
+        mvn deploy:deploy-file -DgroupId=${{ github.event.inputs.group }} -DartifactId=${{ github.event.inputs.artifact }} -Dversion=${{ github.event.inputs.version }} -Dpackaging=jar -Dfile=./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/barath-tw/test-dependency-management
       env:
         MAVEN_USERNAME: ${{ github.actor }}
         MAVEN_PASSWORD: ${{ secrets.GH_TOKEN }}
