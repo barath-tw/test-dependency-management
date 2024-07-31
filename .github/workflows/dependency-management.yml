@@ -49,6 +49,8 @@ jobs:
       with:
         project: 'test'
         path: ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}
+      env:
+        JAVA_HOME: /opt/jdk
 
 
     # - name: Sign Dependency
