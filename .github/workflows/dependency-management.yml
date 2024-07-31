@@ -59,6 +59,7 @@ jobs:
     - name: Scan for Vulnerabilities
       run: |
         npm install -g snyk
+        snyk auth ${{ secrets.SNYK_TOKEN }}
         snyk test --file=./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
       continue-on-error: true
     
