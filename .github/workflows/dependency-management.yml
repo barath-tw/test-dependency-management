@@ -37,9 +37,12 @@ jobs:
         MAVEN_OPTS: "-Dmaven.repo.local=./m2"
 
     - name: Scan for Vulnerabilities
-      uses: dependabot/fetch-metadata@v1
-      with:
-        path: ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}
+      run: |
+        wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.0/dependency-check-10.0.0-release.zip
+        unzip dependency-check-10.0.0-release.zip
+        export PATH=$PATH:$(pwd)/dependency-check/bin
+        dependency-check.sh --scan ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/ 
+      continue-on-error: true
 
     # - name: Sign Dependency
     #   run: |
