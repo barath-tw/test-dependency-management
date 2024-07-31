@@ -43,9 +43,12 @@ jobs:
     #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
     #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-    - name: Publish to GitHub Packages
+    - name: debug
       run: |
-        mvn deploy:deploy-file -DgroupId=${{ github.event.inputs.group }} -DartifactId=${{ github.event.inputs.artifact }} -Dversion=${{ github.event.inputs.version }} -Dpackaging=jar -Dfile=./m2/${{ github.event.inputs.group }}/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/OWNER/REPO
-      env:
-        MAVEN_USERNAME: ${{ github.actor }}
-        MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        ls
+    # - name: Publish to GitHub Packages
+    #   run: |
+    #     mvn deploy:deploy-file -DgroupId=${{ github.event.inputs.group }} -DartifactId=${{ github.event.inputs.artifact }} -Dversion=${{ github.event.inputs.version }} -Dpackaging=jar -Dfile=./m2/${{ github.event.inputs.group }}/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/OWNER/REPO
+    #   env:
+    #     MAVEN_USERNAME: ${{ github.actor }}
+    #     MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
