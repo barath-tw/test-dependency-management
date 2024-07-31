@@ -1,0 +1,51 @@
+name: Dependency Management
+
+on:
+  workflow_dispatch:
+    inputs:
+      group:
+        description: 'Dependency groupId'
+        required: true
+      artifact:
+        description: 'Dependency artifactId'
+        required: true
+      version:
+        description: 'Dependency version'
+        required: true
+
+jobs:
+  manage-dependency:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'  # Specify Java version
+
+    - name: Download Dependency
+      run: |
+        mvn dependency:get -Dartifact=${{ github.event.inputs.group }}:${{ github.event.inputs.artifact }}:${{ github.event.inputs.version }}
+      env:
+        MAVEN_OPTS: "-Dmaven.repo.local=./m2"
+
+    - name: Scan for Vulnerabilities
+      uses: dependabot/fetch-metadata@v1
+
+    - name: Sign Dependency
+      run: |
+        gpg --batch --yes --armor --output signed-${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.asc --detach-sig ./m2/${{ github.event.inputs.group }}/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Publish to GitHub Packages
+      run: |
+        mvn deploy:deploy-file -DgroupId=${{ github.event.inputs.group }} -DartifactId=${{ github.event.inputs.artifact }} -Dversion=${{ github.event.inputs.version }} -Dpackaging=jar -Dfile=./m2/${{ github.event.inputs.group }}/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/OWNER/REPO
+      env:
+        MAVEN_USERNAME: ${{ github.actor }}
+        MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
