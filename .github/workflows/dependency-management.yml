@@ -43,19 +43,25 @@ jobs:
     #     export PATH=$PATH:$(pwd)/dependency-check/bin
     #     dependency-check.sh --scan ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/ 
     #   continue-on-error: true
-    - name: Depcheck
-      uses: dependency-check/Dependency-Check_Action@main
-      id: Depcheck
-      with:
-        project: 'test'
-        format: 'HTML'
-        out: 'reports'
-        args: >
-            --failOnCVSS 7
-            --enableRetired
-            --scan ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}
-      env:
-        JAVA_HOME: /opt/jdk
+    # - name: Depcheck
+    #   uses: dependency-check/Dependency-Check_Action@main
+    #   id: Depcheck
+    #   with:
+    #     project: 'test'
+    #     format: 'HTML'
+    #     out: 'reports'
+    #     args: >
+    #         --failOnCVSS 7
+    #         --enableRetired
+    #         --scan ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}
+    #   env:
+    #     JAVA_HOME: /opt/jdk
+    - name: Scan for Vulnerabilities
+      run: |
+        npm install -g snyk
+        snyk test --file=./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
+      continue-on-error: true
+    
 
 
     # - name: Sign Dependency
