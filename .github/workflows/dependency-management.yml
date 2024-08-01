@@ -65,7 +65,13 @@ jobs:
 
     - name: Set up GPG
       run: |
-        echo "$GPG_PRIVATE_KEY" | gpg --import
+        mkdir -p ~/.gnupg
+        chmod 700 ~/.gnupg
+        echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+        echo "use-agent" >> ~/.gnupg/gpg.conf
+        echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+        gpg-connect-agent reloadagent /bye
       env:
         GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
