@@ -63,27 +63,27 @@ jobs:
         snyk test --file=./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
       continue-on-error: true 
 
-    - name: Set up GPG
-      run: |
-        mkdir -p ~/.gnupg
-        chmod 700 ~/.gnupg
-        echo "$GPG_PRIVATE_KEY" | gpg --batch --import
-        echo "use-agent" >> ~/.gnupg/gpg.conf
-        echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
-        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
-        gpg-connect-agent reloadagent /bye
-      env:
-        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    # - name: Set up GPG
+    #   run: |
+    #     mkdir -p ~/.gnupg
+    #     chmod 700 ~/.gnupg
+    #     echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+    #     echo "use-agent" >> ~/.gnupg/gpg.conf
+    #     echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+    #     echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+    #     gpg-connect-agent reloadagent /bye
+    #   env:
+    #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+    #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
 
-    - name: Sign Dependency
-      run: |
-        echo "$GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --armor --output signed-${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.asc ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
-      # run: |
-      #   gpg --batch --yes --armor --output signed-${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.asc --detach-sig ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
-      env:
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    # - name: Sign Dependency
+    #   run: |
+    #     echo "$GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --armor --output signed-${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.asc ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
+    #   # run: |
+    #   #   gpg --batch --yes --armor --output signed-${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.asc --detach-sig ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
+    #   env:
+    #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
     - name: debug
       run: |
