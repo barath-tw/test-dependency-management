@@ -83,7 +83,7 @@ jobs:
       # run: |
       #   gpg --batch --yes --armor --output signed-${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.asc --detach-sig ./m2/$GROUP_PATH/${{ github.event.inputs.artifact }}/${{ github.event.inputs.version }}/${{ github.event.inputs.artifact }}-${{ github.event.inputs.version }}.jar
       env:
-        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PASSPHRASE }}
 
     - name: debug
       run: |
